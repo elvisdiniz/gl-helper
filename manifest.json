@@ -1,0 +1,37 @@
+{
+  "name": "GL Helper",
+  "version": "0.1.0",
+  "description": "Sincroniza dados do ComprasNet com o Gestão de Licitações",
+  "permissions": [],
+  "host_permissions": [
+    "https://cnetmobile.estaleiro.serpro.gov.br/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://cnetmobile.estaleiro.serpro.gov.br/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [],
+      "matches": [
+        "https://cnetmobile.estaleiro.serpro.gov.br/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/ext-icon.png",
+      "24": "assets/ext-icon.png",
+      "32": "assets/ext-icon.png"
+    },
+    "default_title": "GL Helper",
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 3
+}
