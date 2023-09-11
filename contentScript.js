@@ -18,28 +18,28 @@ const itemUpdate = (item, identificador, token) => {
         })
 }
 
-const groupUpdate = (group, identificador, token) => {
-    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/itens/${group}/propostas`
+const groupUpdate = (grupo, identificador, token) => {
+    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/itens/${grupo}/propostas`
     fetch(url, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` }
     })
         .then(res => res.json())
         .then(data => {
-            fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/grupo/${group}`, {
+            fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/grupo/${grupo}`, {
                 method: 'PUT',
                 body: JSON.stringify(data)
             })
             data[0].propostasItem.forEach(proposta => {
                 let identificadorParticipante = proposta.participante.identificacao
-                let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${group}/itens-grupo/propostas`
+                let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas`
                 fetch(url, {
                     method: 'GET',
                     headers: { Authorization: `Bearer ${token}` }
                 })
                     .then(res => res.json())
                     .then(data => {
-                        fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${group}`, {
+                        fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
                             method: 'PUT',
                             body: JSON.stringify(data)
                         })
