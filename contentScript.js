@@ -106,7 +106,7 @@ const observer = new MutationObserver(function (mutations) {
             let urlParams = new URLSearchParams(previousUrl.split('?')[1])
             groupUpdate(uriData[1], urlParams.get('identificador'), sessionStorage['accessToken'])
         } else if (location.href.endsWith('/comprasnet-web/seguro/governo/selecao-fornecedores')) {
-            let urlParams = new URLSearchParams(previousUrl.split('?')[1])
+            let urlParams = new URLSearchParams(location.href.split('?')[1])
             updateAll(urlParams.get('identificador'), sessionStorage['accessToken'])
         }
         previousUrl = window.location.href
