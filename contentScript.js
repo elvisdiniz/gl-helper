@@ -10,7 +10,6 @@ const itemUpdate = (item, identificador, token) => {
     })
         .then(res => res.json())
         .then(data => {
-            console.log(data)
             fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/item/${item}`, {
                 method: 'PUT',
                 body: JSON.stringify(data)
