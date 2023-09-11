@@ -87,7 +87,7 @@ const updateAll = async (identificador, token) => {
         })
         data = await res.json()
         data.forEach((item, i) => {
-            if (isExpired(identificador, item.numero, 120)) setTimeout(() => {
+            if (isExpired(identificador, item.numero, 7200)) setTimeout(() => {
                 if (item.tipo == 'I') {
                     itemUpdate(item.numero, identificador, token)
                 } else if (item.tipo == 'G') {
@@ -100,7 +100,7 @@ const updateAll = async (identificador, token) => {
 }
 
 let previousUrl = ''
-const observer = new MutationObserver(function (mutations) {
+const observer = new MutationObserver((mutations) => {
     if (window.location.href !== previousUrl) {
         let uriData = null
         if (uriData = itemUri.exec(previousUrl.split('?')[0])) {
