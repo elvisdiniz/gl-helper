@@ -55,44 +55,48 @@ const groupUpdate = (grupo, identificador, token) => {
                         setUpdateTime(identificador, grupo)
                     }
                 })
-            data[0].propostasItem.forEach((proposta, i) => {
-                setTimeout(() => {
+            data[0].propostasItem.forEach(async (proposta) => {
+                let pagina = 0
+                let data_ = []
+                do {
                     let identificadorParticipante = proposta.participante.identificacao
-                    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas`
-                    fetch(url, {
+                    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas?tamanhoPagina=10&pagina=${pagina}`
+                    let res = await fetch(url, {
                         method: 'GET',
                         headers: { Authorization: `Bearer ${token}` }
                     })
-                        .then(res => res.json())
-                        .then(data => {
-                            fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
-                                method: 'PUT',
-                                body: JSON.stringify(data)
-                            })
-                        })
-                }, 2 * 1000 * i)
+                    data_ = await res.json()
+                    if (data_.length > 0) fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(data_)
+                    })
+                    pagina++
+                } while (data_.length > 0)
             })
         })
 }
 
-const updateAll = (identificador, token) => {
-    let url = 'https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-fase-externa/v1/compras/${identificador}/itens/em-selecao-fornecedores'
-    fetch(url, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }
-    })
-        .then(res => res.json())
-        .then(data => {
-            data.forEach((item, i) => {
-                if (isExpired(identificador, item.numero, 120)) setTimeout(() => {
-                    if (item.tipo == 'I') {
-                        itemUpdate(item.identificador, identificador, token)
-                    } else if (item.tipo == 'G') {
-                        groupUpdate(item.identificador, identificador, token)
-                    }
-                }, 3 * 1000 * i)
-            })
+const updateAll = async (identificador, token) => {
+    let pagina = 0
+    let data = []
+    do {
+        let url = `https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-fase-externa/v1/compras/${identificador}/itens/em-selecao-fornecedores?tamanhoPagina=10&pagina=${pagina}&filtro=1`
+        let res = await fetch(url, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` }
         })
+        data = await res.json()
+        data.forEach((item, i) => {
+            if (isExpired(identificador, item.numero, 120)) setTimeout(() => {
+                if (item.tipo == 'I') {
+                    itemUpdate(item.numero, identificador, token)
+                } else if (item.tipo == 'G') {
+                    groupUpdate(item.numero, identificador, token)
+                }
+            }, 3 * 1000 * i)
+        })
+        pagina++
+    } while (data.length > 0)
 }
 
 let previousUrl = ''
@@ -105,7 +109,7 @@ const observer = new MutationObserver(function (mutations) {
         } else if (uriData = groupUri.exec(previousUrl.split('?')[0])) {
             let urlParams = new URLSearchParams(previousUrl.split('?')[1])
             groupUpdate(uriData[1], urlParams.get('identificador'), sessionStorage['accessToken'])
-        } else if (location.href.endsWith('/comprasnet-web/seguro/governo/selecao-fornecedores')) {
+        } else if (location.href.split('?')[0].endsWith('/comprasnet-web/seguro/governo/selecao-fornecedores')) {
             let urlParams = new URLSearchParams(location.href.split('?')[1])
             updateAll(urlParams.get('identificador'), sessionStorage['accessToken'])
         }
