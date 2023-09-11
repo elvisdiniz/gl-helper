@@ -55,21 +55,23 @@ const groupUpdate = (grupo, identificador, token) => {
                         setUpdateTime(identificador, grupo)
                     }
                 })
-            data[0].propostasItem.forEach(proposta => {
-                let identificadorParticipante = proposta.participante.identificacao
-                let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas`
-                fetch(url, {
-                    method: 'GET',
-                    headers: { Authorization: `Bearer ${token}` }
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
-                            method: 'PUT',
-                            body: JSON.stringify(data)
-                        })
+            data[0].propostasItem.forEach((proposta, i) => {
+                setTimeout(() => {
+                    let identificadorParticipante = proposta.participante.identificacao
+                    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas`
+                    fetch(url, {
+                        method: 'GET',
+                        headers: { Authorization: `Bearer ${token}` }
                     })
-            });
+                        .then(res => res.json())
+                        .then(data => {
+                            fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
+                                method: 'PUT',
+                                body: JSON.stringify(data)
+                            })
+                        })
+                }, 2 * 1000 * i)
+            })
         })
 }
 
@@ -82,13 +84,13 @@ const updateAll = (identificador, token) => {
         .then(res => res.json())
         .then(data => {
             data.forEach((item, i) => {
-                setTimeout(() => {
-                    if (item.tipo == 'I' && isExpired(identificador, item.numero, 120)) {
+                if (isExpired(identificador, item.numero, 120)) setTimeout(() => {
+                    if (item.tipo == 'I') {
                         itemUpdate(item.identificador, identificador, token)
-                    } else if (item.tipo == 'G' && isExpired(identificador, item.numero, 120)) {
+                    } else if (item.tipo == 'G') {
                         groupUpdate(item.identificador, identificador, token)
                     }
-                }, 3 * 1000 * i);
+                }, 3 * 1000 * i)
             })
         })
 }
