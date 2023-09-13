@@ -2,19 +2,11 @@ const targetHost = 'https://gestaodelicitacoes.com'
 const itemUri = /\/comprasnet-web\/seguro\/governo\/selecao-fornecedores\/item\/(\d+)$/
 const groupUri = /\/comprasnet-web\/seguro\/governo\/selecao-fornecedores\/item\/(-\d+)$/
 
-const setUpdateTime = (identificador, item) => {
-    localStorage[`${identificador}-${item}`] = new Date().getTime()
-}
-
-const getUpdateTime = (identificador, item) => {
-    return localStorage[`${identificador}-${item}`] ?? null
-}
-
-const isExpired = (identificador, item, seconds) => {
-    let updateTime = getUpdateTime(identificador, item)
-    if (!updateTime) return true
+const isExpired = (listaItens, item, seconds) => {
+    if (!listaItens[item]) return true
     let now = new Date().getTime()
-    let diff = now - updateTime
+    let lastUpdate = new Date(listaItens[item]).getTime()
+    let diff = now - lastUpdate
     return diff > seconds * 1000
 }
 
@@ -30,11 +22,6 @@ const itemUpdate = (item, identificador, token) => {
                 method: 'PUT',
                 body: JSON.stringify(data)
             })
-                .then(res => {
-                    if (res.status === 204) {
-                        setUpdateTime(identificador, item)
-                    }
-                })
         })
 }
 
@@ -50,11 +37,6 @@ const groupUpdate = (grupo, identificador, token) => {
                 method: 'PUT',
                 body: JSON.stringify(data)
             })
-                .then(res => {
-                    if (res.status === 204) {
-                        setUpdateTime(identificador, grupo)
-                    }
-                })
             data[0].propostasItem.forEach(async (proposta) => {
                 let pagina = 0
                 let data_ = []
@@ -77,6 +59,20 @@ const groupUpdate = (grupo, identificador, token) => {
 }
 
 const updateAll = async (identificador, token) => {
+    let res = null
+    res = await fetch(`${targetHost}/api/pregao/${identificador}/itens-pregao`)
+    let itensPregao = await res.json()
+    res = await fetch(`${targetHost}/api/pregao/${identificador}/grupos-pregao`)
+    let gruposPregao = await res.json()
+
+    let dataUltimaAtualizacao = {}
+    itensPregao.forEach(item => {
+        dataUltimaAtualizacao[`${item.numero}`] = item.dataUltimaAtualizacao
+    })
+    gruposPregao.forEach(grupo => {
+        dataUltimaAtualizacao[`G${grupo.numero}`] = grupo.dataUltimaAtualizacao
+    })
+
     let pagina = 0
     let data = []
     do {
@@ -87,7 +83,7 @@ const updateAll = async (identificador, token) => {
         })
         data = await res.json()
         data.forEach((item, i) => {
-            if (isExpired(identificador, item.numero, 7200)) setTimeout(() => {
+            if (isExpired(dataUltimaAtualizacao, item.identificador, 7200)) setTimeout(() => {
                 if (item.tipo == 'I') {
                     itemUpdate(item.numero, identificador, token)
                 } else if (item.tipo == 'G') {
