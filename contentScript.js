@@ -115,4 +115,6 @@ const observer = new MutationObserver((mutations) => {
 const config = { subtree: true, childList: true }
 
 // start listening to changes
-observer.observe(document, config)
+if (window.location.href.startsWith('https://cnetmobile.estaleiro.serpro.gov.br')) {
+    observer.observe(document, config)
+}
