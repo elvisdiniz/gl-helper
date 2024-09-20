@@ -7,6 +7,8 @@
 // @match        https://cnetmobile.estaleiro.serpro.gov.br/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
+// @downloadURL  https://github.com/elvisdiniz/gl-helper/raw/main/gl-helper.user.js
+// @updateURL    https://github.com/elvisdiniz/gl-helper/raw/main/gl-helper.user.js
 // ==/UserScript==
 
 const targetHost = 'https://gestaodelicitacoes.com'
