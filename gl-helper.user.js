@@ -102,7 +102,7 @@ const updateAll = async (identificador, token) => {
                 } else if (item.tipo == 'G') {
                     groupUpdate(item.numero, identificador, token)
                 }
-            }, 3 * 1000 * i)
+            }, 4 * 1000 * i)
         })
         pagina++
     } while (data.length > 0)
