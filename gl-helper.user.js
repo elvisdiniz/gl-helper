@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         GL Helper
 // @namespace    https://gestaodelicitacoes.com/
-// @version      2024-09-19
-// @description  try to take over the world!
+// @version      2025-06-13
+// @description  Script para sincronizar dados do Comprasnet com o Gestaodelicitacoes.com
 // @author       You
 // @match        https://cnetmobile.estaleiro.serpro.gov.br/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -21,6 +21,21 @@ const isExpired = (listaItens, item, seconds) => {
     let lastUpdate = new Date(listaItens[item]).getTime()
     let diff = now - lastUpdate
     return diff > seconds * 1000
+}
+
+const compraUpdate = (identificador, token) => {
+    let url = `/comprasnet-fase-externa/v1/compras/${identificador}`
+    fetch(url, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+    })
+        .then(res => res.json())
+        .then(data => {
+            fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}`, {
+                method: 'PUT',
+                body: JSON.stringify(data)
+            })
+        })
 }
 
 const itemUpdate = (item, identificador, token) => {
@@ -121,6 +136,9 @@ const observer = new MutationObserver((mutations) => {
         } else if (location.href.split('?')[0].endsWith('/comprasnet-web/seguro/governo/selecao-fornecedores')) {
             let urlParams = new URLSearchParams(location.href.split('?')[1])
             updateAll(urlParams.get('identificador'), sessionStorage['accessToken'])
+        } else if (location.href.split('?')[0].endsWith('/comprasnet-web/seguro/governo/configuracao')) {
+            let urlParams = new URLSearchParams(location.href.split('?')[1])
+            compraUpdate(urlParams.get('identificador'), sessionStorage['accessToken'])
         }
         previousUrl = window.location.href
     }
