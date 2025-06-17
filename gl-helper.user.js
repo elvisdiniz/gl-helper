@@ -15,6 +15,8 @@ const targetHost = 'https://gestaodelicitacoes.com'
 const itemUri = /\/comprasnet-web\/seguro\/governo\/selecao-fornecedores\/item\/(\d+)$/
 const groupUri = /\/comprasnet-web\/seguro\/governo\/selecao-fornecedores\/item\/(-\d+)$/
 
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+
 const isExpired = (listaItens, item, seconds) => {
     if (!listaItens[item]) return true
     let now = new Date().getTime()
@@ -65,23 +67,26 @@ const groupUpdate = (grupo, identificador, token) => {
                 method: 'PUT',
                 body: JSON.stringify(data)
             })
-            data[0].propostasItem.forEach(async (proposta) => {
-                let pagina = 0
-                let data_ = []
-                do {
-                    let identificadorParticipante = proposta.participante.identificacao
-                    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas?tamanhoPagina=10&pagina=${pagina}`
-                    let res = await fetch(url, {
-                        method: 'GET',
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                    data_ = await res.json()
-                    if (data_.length > 0) fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(data_)
-                    })
-                    pagina++
-                } while (data_.length > 0)
+            data[0].propostasItem.forEach((proposta, i) => {
+                setTimeout(async () => {
+                    let pagina = 0
+                    let data_ = []
+                    do {
+                        let identificadorParticipante = proposta.participante.identificacao
+                        let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas?tamanhoPagina=10&pagina=${pagina}`
+                        let res = await fetch(url, {
+                            method: 'GET',
+                            headers: { Authorization: `Bearer ${token}` }
+                        })
+                        data_ = await res.json()
+                        if (data_.length > 0) fetch(`${targetHost}/api/atualizar-comprasnet/${identificador}/participante/${identificadorParticipante}/grupo/${grupo}`, {
+                            method: 'PUT',
+                            body: JSON.stringify(data_)
+                        })
+                        pagina++
+                        await sleep(3500)
+                    } while (data_.length > 0)
+                }, 5 * 1000 * i)
             })
         })
 }
