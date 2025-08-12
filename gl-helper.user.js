@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GL Helper
 // @namespace    https://gestaodelicitacoes.com/
-// @version      2025-06-13
+// @version      2025-08-10
 // @description  Script para sincronizar dados do Comprasnet com o Gestaodelicitacoes.com
 // @author       You
 // @match        https://cnetmobile.estaleiro.serpro.gov.br/*
@@ -119,6 +119,7 @@ const updateAll = async (identificador, token) => {
             if (isExpired(dataUltimaAtualizacao, item.identificador, 7200)) setTimeout(() => {
                 if (item.tipo == 'I') {
                     itemUpdate(item.numero, identificador, token)
+                    await sleep(1000)
                 } else if (item.tipo == 'G') {
                     groupUpdate(item.numero, identificador, token)
                 }
