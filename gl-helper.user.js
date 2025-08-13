@@ -116,12 +116,13 @@ const updateAll = async (identificador, token) => {
         })
         data = await res.json()
         data.forEach((item, i) => {
-            if (isExpired(dataUltimaAtualizacao, item.identificador, 7200)) setTimeout(() => {
+            if (isExpired(dataUltimaAtualizacao, item.identificador, 7200)) setTimeout(async () => {
                 if (item.tipo == 'I') {
                     itemUpdate(item.numero, identificador, token)
                     await sleep(1000)
                 } else if (item.tipo == 'G') {
                     groupUpdate(item.numero, identificador, token)
+                    await sleep(1000)
                 }
             }, 4 * 1000 * i)
         })
