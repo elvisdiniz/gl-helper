@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GL Helper
 // @namespace    https://gestaodelicitacoes.com/
-// @version      2025-08-11
+// @version      2026-11-24
 // @description  Script para sincronizar dados do Comprasnet com o Gestaodelicitacoes.com
 // @author       You
 // @match        https://cnetmobile.estaleiro.serpro.gov.br/*
