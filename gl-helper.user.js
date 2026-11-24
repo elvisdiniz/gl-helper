@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GL Helper
 // @namespace    https://gestaodelicitacoes.com/
-// @version      2026-11-24
+// @version      2026-11-25
 // @description  Script para sincronizar dados do Comprasnet com o Gestaodelicitacoes.com
 // @author       You
 // @match        https://cnetmobile.estaleiro.serpro.gov.br/*
@@ -26,7 +26,7 @@ const isExpired = (listaItens, item, seconds) => {
 }
 
 const compraUpdate = (identificador, token) => {
-    let url = `/comprasnet-fase-externa/v1/compras/${identificador}`
+    let url = `/comprasnet-fase-externa/api/v1/compras/${identificador}`
     fetch(url, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` }
