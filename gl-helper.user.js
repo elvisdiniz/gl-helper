@@ -41,7 +41,7 @@ const compraUpdate = (identificador, token) => {
 }
 
 const itemUpdate = (item, identificador, token) => {
-    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/itens/${item}/propostas`
+    let url = `/comprasnet-fase-externa/api/v1/compras/${identificador}/em-selecao-fornecedores/itens/${item}/propostas`
     fetch(url, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` }
@@ -56,7 +56,7 @@ const itemUpdate = (item, identificador, token) => {
 }
 
 const groupUpdate = (grupo, identificador, token) => {
-    let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/itens/${grupo}/propostas`
+    let url = `/comprasnet-fase-externa/api/v1/compras/${identificador}/em-selecao-fornecedores/itens/${grupo}/propostas`
     fetch(url, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` }
@@ -73,7 +73,7 @@ const groupUpdate = (grupo, identificador, token) => {
                     let data_ = []
                     do {
                         let identificadorParticipante = proposta.participante.identificacao
-                        let url = `/comprasnet-fase-externa/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas?tamanhoPagina=10&pagina=${pagina}`
+                        let url = `/comprasnet-fase-externa/api/v1/compras/${identificador}/em-selecao-fornecedores/participacoes/${identificadorParticipante}/itens/${grupo}/itens-grupo/propostas?tamanhoPagina=10&pagina=${pagina}`
                         let res = await fetch(url, {
                             method: 'GET',
                             headers: { Authorization: `Bearer ${token}` }
@@ -109,7 +109,7 @@ const updateAll = async (identificador, token) => {
     let pagina = 0
     let data = []
     do {
-        let url = `https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-fase-externa/v1/compras/${identificador}/itens/em-selecao-fornecedores?tamanhoPagina=10&pagina=${pagina}&filtro=1`
+        let url = `https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-fase-externa/api/v1/compras/${identificador}/itens/em-selecao-fornecedores?tamanhoPagina=10&pagina=${pagina}&filtro=1`
         let res = await fetch(url, {
             method: 'GET',
             headers: { Authorization: `Bearer ${token}` }
